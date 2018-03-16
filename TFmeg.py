@@ -3,7 +3,7 @@ from matplotlib.pyplot import *
 ion()
 
 
-Nc=272
+Nc=272+1
 fs=1200
 ttot=2.5*fs
 
