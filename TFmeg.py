@@ -1,7 +1,7 @@
 #load data
 from numpy import *
-X=load('Xtr.npy')
-y=load('ytr.npy')
+Xtr=load('Xtr.npy')
+ytr=load('ytr.npy')
 Nc=272
 fs=1200
 ttot=int(2.5*1200)
@@ -65,24 +65,16 @@ correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 ntr=10
 ind=range(len(Xtr))
-random.shuffle(ind)
+random.shuffle(list(ind))
 Xtr2=Xtr[ind[:ntr],:]
-labelstr2=labelstr[ind[:ntr],:]
+dims = shape(Xtr2)
+Xtr_flat = zeros((ntr, dims[1]*dims[2]))
+for i in range(ntr):
+  Xtr_flat[i] = Xtr2[i].flatten()
+labelstr2=ytr[ind[:ntr],:]
 
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
-  for i in range(10001):
-    if i % 100 == 0:
-        random.shuffle(ind)
-        Xtr2=Xtr[ind[:ntr],:]
-        labelstr2=labelstr[ind[:ntr],:]
-        print('step %d,test accuracy %g' % (i,accuracy.eval(feed_dict={
-        x: Xv, y_: labelsv})))
-      # train_accuracy = accuracy.eval(feed_dict={
-      #     x: Xtr, y_: labelstr})
-      # print('step %d, training accuracy %g' % (i, train_accuracy))
-    train_step.run(feed_dict={x: Xtr2, y_: labelstr2})
+  for i in range(ntr):
+    train_step.run(feed_dict={x: Xtr_flat[i], y_: labelstr2[i]})
     a=sess.run(W2)
-
-  # print('test accuracy %g' % accuracy.eval(feed_dict={
-  #     x: Xv, y_: labelsv}))
