@@ -49,7 +49,7 @@ y2=zeros((len(A2tr),2))
 y2[:,1]=1
 
 Xtr=vstack((A1tr,A2tr))
-labelstr=vstack((y1,y2))
+ytr=vstack((y1,y2))
 del(A1tr,A2tr,y1,y2)
 ind=range(len(Xtr))
 random.shuffle(ind)
@@ -64,7 +64,7 @@ y2=zeros((len(A2v),2))
 y2[:,1]=1
 
 Xv=vstack((A1v,A2v))
-labelsv=vstack((y1,y2))
+ysv=vstack((y1,y2))
 del(A1,A2,A1v,A2v,y1,y2)
 ind=range(len(Xv))
 random.shuffle(ind)
