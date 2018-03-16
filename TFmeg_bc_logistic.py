@@ -1,0 +1,53 @@
+#load data
+from numpy import *
+Xtr=load('Xtr.npy')
+ytr=load('ytr.npy')
+Xv=load('Xv.npy')[:50,:,:]
+yv=load('yv.npy')[:50,:]
+Nc=272
+fs=1200
+ttot=int(1*1200)
+#TF
+
+import tensorflow as tf
+
+def weight_variable(shape):
+  initial = tf.truncated_normal(shape, stddev=0.1)
+  return tf.Variable(initial)
+
+def bias_variable(shape):
+  initial = tf.constant(0.1, shape=shape)
+  return tf.Variable(initial)
+#define model
+x = tf.placeholder(tf.float32, shape=[None, Nc,ttot])
+x_flat = tf.reshape(x, [-1, Nc*ttot])
+y_ = tf.placeholder(tf.float32, shape=[None, 2])
+
+# model 1
+W = weight_variable([Nc*ttot, 2])
+b = bias_variable([2])
+
+y = tf.nn.softmax(tf.matmul(x_flat, W) + b) #prediction layer
+
+cross_entropy = tf.reduce_mean(
+    tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_, logits=y)) ###I used v2 here, sv did not
+
+# train_step = tf.train.AdamOptimizer(1e-4).minimize(regularized_loss)#(cross_entropy)
+train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+with tf.Session() as sess:
+  sess.run(tf.global_variables_initializer())
+  for i in range(10001):
+    if i % 100 == 0:
+        print('step %d,train accuracy %g' % (i,accuracy.eval(feed_dict={
+        x: Xv, y_: yv})))
+      # train_accuracy = accuracy.eval(feed_dict={
+      #     x: Xtr, y_: labelstr})
+      # print('step %d, training accuracy %g' % (i, train_accuracy))
+    train_step.run(feed_dict={x: Xtr, y_: ytr})
+    # a=sess.run(W2)
+
+  # print('test accuracy %g' % accuracy.eval(feed_dict={
+  #     x: Xv, y_: labelsv}))
