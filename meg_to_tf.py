@@ -66,7 +66,7 @@ del(A1,A2,A1v,A2v,y1,y2)
 ind=range(len(Xv))
 random.shuffle(list(ind))
 Xv=Xv[ind,:,:]
-yv=yv[ind,:]
+yv=labelsv[ind,:]
 
 save('Xtr',Xtr)
 save('ytr',ytr)
