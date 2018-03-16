@@ -15,7 +15,6 @@ y1=zeros((len(A1_),1))
 k=-1
 for i in A1_:
     k+=1
-    print(k)
     y1[k,0]=i[0]
     A1[k,:,:]=i[1]
 
@@ -29,7 +28,6 @@ y2=zeros((len(A2_),1))
 k=-1
 for i in A2_:
     k+=1
-    print(k)
     y2[k,0]=-i[0]
     A2[k,:,:]=i[1]
 
@@ -51,9 +49,9 @@ Xtr=vstack((A1tr,A2tr))
 labelstr=vstack((y1,y2))
 del(A1tr,A2tr,y1,y2)
 ind=range(len(Xtr))
-random.shuffle(ind)
+random.shuffle(list(ind))
 Xtr=Xtr[ind,:,:]
-ytr=ytr[ind,:]
+ytr=labelstr[ind,:]
 
 A1v=A1[ntr:,:,t0:t1]
 A2v=A2[ntr:,:,t0:t1]
@@ -66,7 +64,7 @@ Xv=vstack((A1v,A2v))
 labelsv=vstack((y1,y2))
 del(A1,A2,A1v,A2v,y1,y2)
 ind=range(len(Xv))
-random.shuffle(ind)
+random.shuffle(list(ind))
 Xv=Xv[ind,:,:]
 yv=yv[ind,:]
 
