@@ -2,6 +2,9 @@
 from numpy import *
 X=load('Xtr.npy')
 y=load('ytr.py')
+Nc=272
+fs=1200
+ttot=int(2.5*1200)
 #TF
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
