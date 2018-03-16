@@ -4,7 +4,7 @@ X=load('Xtr.npy')
 y=load('ytr.py')
 Nc=272
 fs=1200
-ttot=int(2.5*1200)
+ttot=int(1*1200)
 #TF
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
@@ -18,50 +18,34 @@ def bias_variable(shape):
   initial = tf.constant(0.1, shape=shape)
   return tf.Variable(initial)
 #define model
-x = tf.placeholder(tf.float32, shape=[None, Nc])
+x = tf.placeholder(tf.float32, shape=[None, Nc,ttot])
+x_flat = tf.reshape(x, [-1, Nc*ttot, 1])
 y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
-#model 1
-# W = weight_variable([Nc, 2])
-# b = bias_variable([2])
+# model 1
+W = weight_variable([Nc*ttot, 2])
+b = bias_variable([2])
 
-#model 2
-W1 = weight_variable([Nc, 10*Nc])
-b1 = bias_variable([10*Nc])
-h1=tf.nn.relu(tf.matmul(x, W1) + b1)
+y = tf.nn.softmax(tf.matmul(x_flat, W) + b) #prediction layer
 
-W2 = weight_variable([10*Nc, 10*Nc])
-b2 = bias_variable([10*Nc])
-h2=tf.nn.relu(tf.matmul(h1, W2) + b2)
 
-W3 = weight_variable([10*Nc, 2])
-b3 = bias_variable([2])
+cross_entropy = tf.reduce_mean(
+    tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
 
-y = tf.nn.softmax(tf.matmul(h2, W3) + b3) #prediction layer
-
-# ##define traing, validation data and run regression
-# Xtr=X[:ntr,:]
-# labelstr=labels[:ntr]
+# loss = tf.reduce_mean(tf.squared_difference(y, y_))
 #
-# Xv=X[ntr:,:]
-# labelsv=labels[ntr:]
+# l1_regularizer = tf.contrib.layers.l1_regularizer(
+#    scale=.9, scope=None
+# )
 
-# cross_entropy = tf.reduce_mean(
-    # tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-
-loss = tf.reduce_mean(tf.squared_difference(y, y_))
-
-l1_regularizer = tf.contrib.layers.l1_regularizer(
-   scale=.9, scope=None
-)
-
-theta = tf.trainable_variables() # all vars of your graph
-regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, theta)
-
-regularized_loss = loss + regularization_penalty
+# theta = tf.trainable_variables() # all vars of your graph
+# regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, theta)
+#
+# regularized_loss = loss + regularization_penalty
 
 
-train_step = tf.train.AdamOptimizer(1e-4).minimize(regularized_loss)#(cross_entropy)
+# train_step = tf.train.AdamOptimizer(1e-4).minimize(regularized_loss)#(cross_entropy)
+train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 ntr=10
